@@ -2,7 +2,7 @@
 
 A simple drawing app where users can draw in 3D. Pointing and clicking in the model space generates points and lines.
 Features include:
-- Drawing multiple lines by pressing the escape key to stop drawing the current line
+- Drawing multiple lines by pressing the **escape key** to stop drawing the current line
 - Showing and hiding the grid 
 - Showing and hiding the vertices of the lines
 - Changing the color of the lines
