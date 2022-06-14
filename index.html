@@ -19,9 +19,6 @@
   </style>
 </head>
   <body>
-    <div id="app">
-      <h1>Hello World</h1>
-    </div>
     <script type="module">
       import * as THREE from 'three';
       import { OrbitControls } from 'controls';
@@ -43,78 +40,41 @@
 
       const controls = new OrbitControls( camera, renderer.domElement );
 
-      //raycaster
+      //raycaster - sync mouse coordinates with modelspace
       const raycaster = new THREE.Raycaster();
       const pointer = new THREE.Vector2();
+      const planeRayIntersect = new THREE.Vector3()
+      const planeNormal = new THREE.Vector3()
+      const plane = new THREE.Plane()
 
       const onPointerMove = ( evt ) => {
         pointer.x = ( (evt.clientX) / window.innerWidth  ) * 2 - 1;
         pointer.y = - ( (evt.clientY) / window.innerHeight) * 2 + 1;
-        console.log(pointer)
+        planeNormal.copy(camera.position).normalize()
+        plane.setFromNormalAndCoplanarPoint(planeNormal, scene.position)
+        raycaster.setFromCamera(pointer, camera);
+        raycaster.ray.intersectPlane(plane, planeRayIntersect)
       }
 
       //grid
       const gridHelper = new THREE.GridHelper(20, 20)
       scene.add(gridHelper)
 
-      //scene geometery - creating a line
-      const points = [];
+      //scene geometery
 
-      // points.push( new THREE.Vector3( 3, 0, 0 ))
-      // points.push( new THREE.Vector3( 0, 3, 0 ))
-      // points.push( new THREE.Vector3( 0, 0, 3 ))
-      // points.push( new THREE.Vector3( -3, 0, 0 ))
-      // points.push( new THREE.Vector3( -3, 3, 3 ))
-
-      // const geometry = new THREE.BufferGeometry().setFromPoints( points );
-      // const material = new THREE.LineBasicMaterial( { 
-      //   color: 0xbd1c7d,
-      //   linewidth: 3 
-      // });
-
-      // const line = new THREE.Line(geometry, material);
-      // scene.add(line);
-
-      //points
-      for ( let i = 0; i < 100; i ++ ) {
-
-        const x = THREE.MathUtils.randFloatSpread( 20 );
-        const y = THREE.MathUtils.randFloatSpread( 20 );
-        const z = THREE.MathUtils.randFloatSpread( 20 );
-
-        points.push( x, y, z );
-
-      }
-
-      const pointsGeometry = new THREE.BufferGeometry()
-      //points is the array argument, itemSize is 3
-      pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3))
-      const pointsMaterial = new THREE.PointsMaterial({
-        color: 0x001fb8,
-        size: 4,
-        sizeAttenuation: false
-      })
-      const dots = new THREE.Points( pointsGeometry, pointsMaterial);
-      scene.add(dots)
-
-
-      const lineGeometry = new THREE.BufferGeometry()
-      lineGeometry.setAttribute('position', new THREE.Float32BufferAttribute(points, 3))
-      const lineMaterial = new THREE.LineBasicMaterial( { 
-        color: 0xbd1c7d,
-        linewidth: 3 
-      });
-
-      const lines = new THREE.Line(lineGeometry, lineMaterial);
-      scene.add(lines);
-
-
-      //raycaster onclick
+      //>>>add a vertex
       function onClick() {
-        raycaster.setFromCamera(pointer, camera);
-        points.push( new THREE.Vector3( pointer.x, pointer.y, 0 ))
-        console.log("click")
-        console.log(points)
+        const coordinates = [planeRayIntersect.x, planeRayIntersect.y, planeRayIntersect.z]
+        const pointsGeometry = new THREE.BufferGeometry()
+        //points is the array argument, itemSize is 3
+        pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(coordinates, 3))
+        const pointsMaterial = new THREE.PointsMaterial({
+          color: 0x001fb8,
+          size: 4,
+          sizeAttenuation: false
+        })
+        const vertex = new THREE.Points( pointsGeometry, pointsMaterial);
+        scene.add(vertex)
       }
 
       //events
