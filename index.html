@@ -20,6 +20,7 @@
 </head>
   <body>
     <script type="module">
+
       import * as THREE from 'three';
       import { OrbitControls } from 'controls';
       
@@ -63,11 +64,12 @@
       scene.add(gridHelper)
 
       //scene geometery
-      var isDrawing = false
+      let isDrawing = false
 
       const points = []
       //>>>add a vertex
-      function onClick() {
+      function plotPoint() {
+        isDrawing = true
         points.push( new THREE.Vector3( planeRayIntersect.x, planeRayIntersect.y, planeRayIntersect.z ))
         const coordinates = [planeRayIntersect.x, planeRayIntersect.y, planeRayIntersect.z]
         const pointsGeometry = new THREE.BufferGeometry()
@@ -92,9 +94,16 @@
         scene.add(line);
       }
 
+      function endLine(evt) {
+        if (evt.key === 'Escape') {
+          isDrawing = false
+        }
+      }
+
       //events
       window.addEventListener( 'pointermove', onPointerMove );
-      window.addEventListener( 'click', onClick );
+      window.addEventListener( 'click', plotPoint );
+      window.addEventListener( 'keyup', endLine );
 
 
       //animate function
