@@ -7,6 +7,8 @@ Features include:
 - Showing and hiding the vertices of the lines
 - Changing the color of the lines
 
+**Pressing Shift + Right Mouse Button allows you to orbit without drawing a point.**
+
 **To run this app locally:**
 - Fork and Clone the repo
 - Run ```npm install`` in the terminal after opening the repo in VS Code or your editor of choice
