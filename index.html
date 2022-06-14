@@ -63,12 +63,14 @@
       scene.add(gridHelper)
 
       //scene geometery
+      var isDrawing = false
 
+      const points = []
       //>>>add a vertex
       function onClick() {
+        points.push( new THREE.Vector3( planeRayIntersect.x, planeRayIntersect.y, planeRayIntersect.z ))
         const coordinates = [planeRayIntersect.x, planeRayIntersect.y, planeRayIntersect.z]
         const pointsGeometry = new THREE.BufferGeometry()
-        //points is the array argument, itemSize is 3
         pointsGeometry.setAttribute('position', new THREE.Float32BufferAttribute(coordinates, 3))
         const pointsMaterial = new THREE.PointsMaterial({
           color: 0x001fb8,
@@ -77,6 +79,17 @@
         })
         const vertex = new THREE.Points( pointsGeometry, pointsMaterial);
         scene.add(vertex)
+        drawLine()
+      }
+
+      function drawLine() {
+        const geometry = new THREE.BufferGeometry().setFromPoints( points );
+        const material = new THREE.LineBasicMaterial( { 
+          color: 0xbd1c7d,
+          linewidth: 3 
+        });
+        const line = new THREE.Line(geometry, material);
+        scene.add(line);
       }
 
       //events
@@ -87,8 +100,6 @@
       //animate function
       function animate() {
         requestAnimationFrame( animate );
-        // line.rotation.x += 0.01;
-        // line.rotation.y += 0.01;
         controls.update();
         renderer.render( scene, camera );
       }
