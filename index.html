@@ -15,7 +15,7 @@
     }
   </script>
   <style>
-    body { margin: 0; overflow: hidden; background-image: linear-gradient(180deg, #999999, #5e546e )}
+    body { margin: 0; overflow: hidden }
   </style>
 </head>
   <body>
@@ -28,15 +28,20 @@
       var GUI = lil.GUI
       const gui = new GUI();
 
+      const params = {
+        grid: false,
+        showVertices: true,
+        lineColor: "#bd1c7d"
+      }
+
       //set up scene
       const scene = new THREE.Scene();
-      // scene.background = new THREE.Color(0xc9c9c9);
+      scene.background = new THREE.Color(0xc9c9c9);
       const camera = new THREE.PerspectiveCamera( 75, window.innerWidth / window.innerHeight, 0.1, 1000 );
       camera.position.set(10, 10, 10)
       camera.lookAt(0, 0, 0)
 
       const renderer = new THREE.WebGLRenderer();
-      renderer.setClearColor( 0x000000, 0);
       renderer.setSize( window.innerWidth, window.innerHeight );
 
       //resize window
@@ -69,13 +74,25 @@
       }
 
       //grid
-      const gridHelper = new THREE.GridHelper(20, 20)
-      scene.add(gridHelper)
+      let size = 20
+      let divisions = 20
+      const grid = new THREE.GridHelper(size, divisions)
+
+      //show/hide grid
+      gui.add(params, 'grid').onChange(function (val) {
+        !val ? scene.remove(grid) : scene.add(grid)
+      })
 
       //scene geometery
       let isDrawing = false
+      let verticesVisible = true
       const objects = []
       let points = []
+
+      const lineSolid = new THREE.LineBasicMaterial( { 
+          color: 0xbd1c7d,
+          linewidth: 3,
+      });
 
       //>>>add a vertex
       function plotPoint() {
@@ -90,6 +107,9 @@
           sizeAttenuation: false
         })
         const vertex = new THREE.Points( pointsGeometry, pointsMaterial);
+        if (!verticesVisible) {
+          vertex.visible = false
+        }
         objects.push(vertex)
         scene.add(vertex)
         drawLine()
@@ -97,15 +117,31 @@
 
       //>>>create lines between vertices
       function drawLine() {
-        const geometry = new THREE.BufferGeometry().setFromPoints( points );
-        const material = new THREE.LineBasicMaterial( { 
-          color: 0xbd1c7d,
-          linewidth: 3 
-        });
-        const line = new THREE.Line(geometry, material);
+        const lineGeometry = new THREE.BufferGeometry().setFromPoints( points );
+        const line = new THREE.Line(lineGeometry, lineSolid);
         objects.push(line)
         scene.add(line);
+        console.log(line)
       }
+
+      //show and hide verticies
+      gui.add(params, 'showVertices').onChange(function (val) {
+        verticesVisible = val
+        for(let object of objects) {
+          if (object.type === "Points") {
+            object.visible = val
+          }
+        }
+      })
+
+      //change color of lines
+      gui.addColor(params, 'lineColor').onChange(function (val) {
+        for(let object of objects) {
+          if (object.type === "Line") {
+            object.material.color.set(val)
+          }
+        }
+      })
 
       //>>>stop current line and start a new one
       function endLine(evt) {
@@ -118,9 +154,8 @@
       //events
       window.addEventListener( 'resize', onWindowResize );
       window.addEventListener( 'pointermove', onPointerMove );
-      window.addEventListener( 'click', plotPoint );
+      document.querySelector('canvas').addEventListener( 'click', plotPoint );
       window.addEventListener( 'keyup', endLine );
-
 
       //animate function
       function animate() {
