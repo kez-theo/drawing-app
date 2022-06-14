@@ -11,5 +11,5 @@ Features include:
 
 **To run this app locally:**
 - Fork and Clone the repo
-- Run ```npm install`` in the terminal after opening the repo in VS Code or your editor of choice
+- Run ```npm install``` in the terminal after opening the repo in VS Code or your editor of choice
 - type ```node index.js``` in the terminal and navigate to ```localhost:8080``` in your browser
