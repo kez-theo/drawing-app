@@ -41,6 +41,8 @@
       const controls = new OrbitControls( camera, renderer.domElement );
 
       //raycaster - sync mouse coordinates with modelspace
+      //create a plane that is perpendicular to the normal of the camera  
+      //the position of the mouse in modelspace is the intersection of the normal and the plane
       const raycaster = new THREE.Raycaster();
       const pointer = new THREE.Vector2();
       const planeRayIntersect = new THREE.Vector3()
